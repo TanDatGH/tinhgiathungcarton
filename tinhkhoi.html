@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính số khối thùng carton A1</title>
+    <style>
+       
+       body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            max-width: 100%;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px; /* Kích thước phông chữ cố định */
+            box-sizing: border-box;
+            /* Ngăn chặn phóng to trên thiết bị di động */
+            -webkit-text-size-adjust: 100%; 
+        }
+        /* Ẩn nút tăng giảm giá trị cho input số trên các trình duyệt hỗ trợ */
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 48%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .menu {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 2%;
+        }
+        .menu button {
+            padding: 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .menu button:hover {
+            background-color: #218838;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <button onclick="showSection('tinhGia')"><a href="index.html">Tính Giá Thùng</a></button>
+            <button onclick="showSection('tinhKhoiLuong')"><a href="Tinhkhoiluong.html">Tính Khối Lượng Thùng</a></button>
+            <button onclick="showSection('tinhSoKhoi')"><a href="tinhkhoi.html">Tính Số Khối Thùng</a></button>
+        </div>
+        <h1>Tính số khối thùng carton A1</h1>
+        <div class="input-group">
+            <label for="loai-thung">Loại thùng:</label>
+            <select id="loai-thung">
+                <option value="10">3 lớp sóng E</option>
+                <option value="13">3 lớp sóng B</option>
+                <option value="9">3 lớp sóng C</option>
+                <option value="12">5 lớp sóng BE</option>
+                <option value="13.5">5 lớp sóng BC</option>
+                <option value="8">7 lớp sóng</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="d">Chiều dài (cm):</label>
+            <input type="number" id="d" placeholder="Nhập chiều dài">
+        </div>
+        <div class="input-group">
+            <label for="r">Chiều rộng (cm):</label>
+            <input type="number" id="r" placeholder="Nhập chiều rộng">
+        </div>
+        <div class="input-group">
+            <label for="c">Chiều cao (cm):</label>
+            <input type="number" id="c" placeholder="Nhập chiều cao">
+        </div>
+        <div class="input-group">
+            <label for="n">Số lượng thùng:</label>
+            <input type="number" id="n" placeholder="Nhập số lượng thùng">
+        </div>
+        <div class="button-group">
+            <button onclick="tinhSoKhoi()">Tính số khối</button>
+            <button onclick="resetForm()">Nhập lại</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+         function tinhSoKhoi() {
+            const d = parseFloat(document.getElementById('d').value) / 100; // chuyển đổi sang mét
+            const r = parseFloat(document.getElementById('r').value) / 100; // chuyển đổi sang mét
+            const c = parseFloat(document.getElementById('c').value) / 100; // chuyển đổi sang mét
+            const n = parseInt(document.getElementById('n').value);
+            const C = parseFloat(document.getElementById('loai-thung').value) / 100; // chuyển đổi sang mét
+
+            const A = d + r;
+            const B = r + c;
+            const P = tinhSoLuongBo(C * 100); // Lấy số lượng thùng / bó dựa trên giá trị của C
+
+            const soKhoi = (A * B * C * (n / P)).toFixed(1);
+
+            let thongBao = getThongBao(C * 100); // Lấy thông báo dựa trên giá trị của C
+
+            document.getElementById('result').innerHTML = `
+                Số khối: ${soKhoi} m³<br><br>
+                ${thongBao}
+            `;
+        }
+
+        function tinhSoLuongBo(C) {
+            switch (C) {
+                case 10:
+                    return 50;
+                case 13:
+                    return 20;
+                case 9:
+                    return 10;
+                case 12:
+                    return 10;
+                case 13.5:
+                    return 10;
+                case 8:
+                    return 5;
+                default:
+                    return 1;
+            }
+        }
+
+        function getThongBao(C) {
+            switch (C) {
+                case 10:
+                    return "50 thùng / bó.";
+                case 13:
+                    return "20 thùng / bó.";
+                case 9:
+                    return "10 thùng / bó.";
+                case 12:
+                    return "10 thùng / bó.";
+                case 13.5:
+                    return "10 thùng / bó.";
+                case 8:
+                    return "5 thùng / bó.";
+                default:
+                    return "";
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('loai-thung').value = '';
+            document.getElementById('d').value = '';
+            document.getElementById('r').value = '';
+            document.getElementById('c').value = '';
+            document.getElementById('n').value = '';
+            document.getElementById('result').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

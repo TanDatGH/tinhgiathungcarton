@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính giá thùng carton</title>
+    <style>
+      body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            max-width: 100%;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px; /* Kích thước phông chữ cố định */
+            box-sizing: border-box;
+            /* Ngăn chặn phóng to trên thiết bị di động */
+            -webkit-text-size-adjust: 100%; 
+        }
+        /* Ẩn nút tăng giảm giá trị cho input số trên các trình duyệt hỗ trợ */
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 48%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .menu {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 2%;
+        }
+        .menu button {
+            padding: 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .menu button:hover {
+            background-color: #218838;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <button onclick="showSection('tinhGia')"><a href="index.html">Tính Giá Thùng</a></button>
+            <button onclick="showSection('tinhKhoiLuong')"><a href="Tinhkhoiluong.html">Tính Khối Lượng Thùng</a></button>
+            <button onclick="showSection('tinhSoKhoi')"><a href="tinhkhoi.html">Tính Số Khối Thùng</a></button>
+        </div>
+        <h1>Tính giá thùng carton</h1>
+        <div class="input-group">
+            <label for="d">Chiều dài (cm):</label>
+            <input type="number" id="d" placeholder="Nhập chiều dài">
+        </div>
+        <div class="input-group">
+            <label for="r">Chiều rộng (cm):</label>
+            <input type="number" id="r" placeholder="Nhập chiều rộng">
+        </div>
+        <div class="input-group">
+            <label for="c">Chiều cao (cm):</label>
+            <input type="number" id="c" placeholder="Nhập chiều cao">
+        </div>
+        <div class="input-group">
+            <label for="m">Giá m2 (VND/m2):</label>
+            <input type="number" id="m" placeholder="Nhập giá m2">
+        </div>
+        <div class="input-group" id="be-lo-group" style="display:none;">
+            <label for="co-be-lo">Có bế lỗ:</label>
+            <input type="checkbox" id="co-be-lo">
+        </div>
+        <div class="input-group">
+            <label for="loai-thung">Loại thùng:</label>
+            <select id="loai-thung">
+                <option value="am-duong-go">Thùng âm dương gỗ</option>
+                <option value="A1">Thùng A1</option>
+                <option value="nap-chong">Thùng nắp chồng</option>
+                <option value="hop-am-duong">Hộp âm dương</option>
+                <option value="nap-gai-bem">Hộp nắp gài dạng BEM</option>
+                <option value="nap-day-2-dau">Hộp nắp đậy 2 đầu</option>
+                <option value="nap-day-dit-gai">Hộp nắp đậy đít gài</option>
+                <option value="tay-xach">Hộp tay xách</option>
+            </select>
+        </div>
+        <div id="additional-fields" style="display:none;">
+            <div class="input-group">
+                <label for="c0">Chiều cao NẮP (cm):</label>
+                <input type="number" id="c0" placeholder="Nhập chiều cao NẮP">
+            </div>
+            <div class="input-group">
+                <label for="m0">Giá m2 của NẮP (đồng/m2):</label>
+                <input type="number" id="m0" placeholder="Nhập giá m2 của NẮP">
+            </div>
+        </div>
+        <div id="additional-fields-tay-xach" style="display:none;">
+            <div class="input-group">
+                <label for="t">Chiều cao tay xách (cm):</label>
+                <input type="number" id="t" placeholder="Nhập chiều cao tay xách">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="tinhGiaThung()">Tính giá thùng</button>
+            <button onclick="resetForm()">Nhập lại</button>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+    
+    <script>
+        const loaiThungSelect = document.getElementById('loai-thung');
+        const beLoGroup = document.getElementById('be-lo-group');
+        const additionalFields = document.getElementById('additional-fields');
+        const additionalFieldsTayXach = document.getElementById('additional-fields-tay-xach');
+
+        loaiThungSelect.addEventListener('change', function() {
+            if (this.value === 'hop-am-duong') {
+                additionalFields.style.display = 'block';
+                additionalFieldsTayXach.style.display = 'none';
+                beLoGroup.style.display = 'none';
+            } else if (this.value === 'tay-xach') {
+                additionalFields.style.display = 'none';
+                additionalFieldsTayXach.style.display = 'block';
+                beLoGroup.style.display = 'none';
+            } else if (this.value === 'A1' || this.value === 'nap-chong') {
+                additionalFields.style.display = 'none';
+                additionalFieldsTayXach.style.display = 'none';
+                beLoGroup.style.display = 'block';
+            } else {
+                additionalFields.style.display = 'none';
+                additionalFieldsTayXach.style.display = 'none';
+                beLoGroup.style.display = 'none';
+            }
+        });
+
+        function tinhGiaThung() {
+    const d = parseFloat(document.getElementById('d').value);
+    const r = parseFloat(document.getElementById('r').value);
+    const c = parseFloat(document.getElementById('c').value);
+    const m = parseFloat(document.getElementById('m').value);
+    const coBeLo = document.getElementById('co-be-lo').checked;
+    const loaiThung = document.getElementById('loai-thung').value;
+
+    let A, B, S, giaThung, tienKhuon;
+
+    if (loaiThung === 'A1' || loaiThung === 'nap-chong') {
+        A = (d + r) * 2 + 5;
+        if ((d + r) * 2 >= 200 || coBeLo) {
+            A = (d + r) * 2 + 10;
+        }
+    }
+
+    if (loaiThung === 'A1') {
+        B = r + c + 3;
+    } else if (loaiThung === 'nap-chong') {
+        B = (r * 2) + c + 3;
+    } else if (loaiThung === 'am-duong-go') {
+        A = (c * 2) + d + 3;
+        B = (c * 2) + r + 3;
+    } else if (loaiThung === 'hop-am-duong') {
+        const c0 = parseFloat(document.getElementById('c0').value);
+        const m0 = parseFloat(document.getElementById('m0').value);
+
+        const A1 = (c0 * 2) + d + 5;
+        const B1 = (c0 * 4) + r + 5;
+        const S1 = A1 * B1;
+
+        const A2 = (c * 4) + d + 3;
+        const B2 = (c * 2) + r + 3;
+        const S2 = A2 * B2;
+
+        giaThung = Math.round((S1 * m0) + (S2 * m));
+        const tienKhuonNap = Math.round(S1 * 180);
+        const tienKhuonDay = Math.round(S2 * 180);
+
+        document.getElementById('result').innerHTML = `
+            Giá thùng: ${giaThung.toLocaleString()} đồng<br>
+            Tiền khuôn NẮP: ${tienKhuonNap.toLocaleString()} đồng<br>
+            Tiền khuôn ĐÁY: ${tienKhuonDay.toLocaleString()} đồng
+        `;
+        return;
+    } else if (loaiThung === 'nap-gai-bem') {
+        A = (c * 4) + d + 3;
+        B = (c * 3) + (r * 2) + 3;
+    } else if (loaiThung === 'tay-xach') {
+        const t = parseFloat(document.getElementById('t').value);
+        A = (d + r) * 2 + 5;
+        B = t + (r / 2) + c + (r / 2) + 6;
+    } else if (loaiThung === 'nap-day-2-dau') {
+        A = (d + r) * 2 + 5;
+        B = (3 + r) * 2 + c + 3;
+    } else if (loaiThung === 'nap-day-dit-gai') {
+        A = (d + r) * 2 + 5;
+        B = 3 + r + c + (r / 2) + 6;
+    }
+
+    S = A * B;
+    giaThung = Math.round(S * m);
+    tienKhuon = Math.round(S * 180);
+    
+    document.getElementById('result').innerHTML = `
+        Giá thùng: ${giaThung.toLocaleString()} đồng<br><br>
+        Tiền khuôn: ${tienKhuon.toLocaleString()} đồng
+    `;
+}
+
+
+    </script>
+    <script>
+        function resetForm() {
+            document.getElementById('d').value = '';
+            document.getElementById('r').value = '';
+            document.getElementById('c').value = '';
+            document.getElementById('m').value = '';
+            document.getElementById('c0').value = '';
+            document.getElementById('m0').value = '';
+            document.getElementById('t').value = '';
+            document.getElementById('co-be-lo').checked = false;
+            document.getElementById('loai-thung').selectedIndex = 0;
+            document.getElementById('result').innerHTML = '';
+            additionalFields.style.display = 'none';
+            additionalFieldsTayXach.style.display = 'none';
+            beLoGroup.style.display = 'none';
+        }
+        
+    </script>
+</body>
+</html>
